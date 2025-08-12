@@ -1,0 +1,36 @@
+lightgbm
+python-Levenshtein
+pandas
+numpy
+scikit-learn
+python-dateutil
+xgboost
+spacy
+fuzzywuzzy
+pytesseract
+pdf2image
+pillow
+chardet
+pymupdf
+python-docx
+docx2txt
+streamlit
+pdfplumber
+opencv-python
+setuptools
+PyMuPDF
+paddleocr
+joblib
+fpdf2
+matplotlib
+reportlab
+faker
+dill
+px
+gspread
+oauth2client
+plotly
+cryptography
+
+# paddlepaddle special install command (run separately):
+# pip install paddlepaddle -i https://mirror.baidu.com/pypi/simple
