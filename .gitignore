@@ -5,5 +5,7 @@ categorized_csvs/
 outputs/
 statements/
 temp/
+cleaned_csvs/
 *.csv
-*.json
+bank/
+
