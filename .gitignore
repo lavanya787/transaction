@@ -1,0 +1,9 @@
+.history/
+__pycache__/
+models/
+categorized_csvs/
+outputs/
+statements/
+temp/
+*.csv
+*.json
