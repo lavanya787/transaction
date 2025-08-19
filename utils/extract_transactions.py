@@ -1,22 +1,28 @@
-import pandas as pd
+# extract_transactions.py
+"""
+Extract transactions from bank statement file (PDF, image, CSV, XLSX).
+Only handles OCR/text parsing and returns a raw DataFrame.
+"""
 import pdfplumber
-import pytesseract
-from PIL import Image
+import re
+import pandas as pd
 import numpy as np
-import cv2
 import os
 import io
+import cv2
 import docx2txt
-import re
 import chardet
-from dateutil.parser import parse as parse_date
 from datetime import datetime
-import fitz  # PyMuPDF
+import fitz
+from PIL import Image
+import pytesseract
 from paddleocr import PaddleOCR
-#from utils.text_parser import parse_bank_statement_text
 import sys
-import os
+from dateutil import parser as parse_date
+from utils.text_parser import parse_bank_statement_text
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 # Initialize PaddleOCR
 ocr = PaddleOCR(use_angle_cls=True, lang='en')
 
@@ -28,8 +34,16 @@ def normalize_date(date_str):
             return datetime.strptime(date_str, fmt).strftime("%Y-%m-%d")
         except:
             continue
-    return pd.DataFrame(columns=["Date", "Description", "Debit", "Credit", "Balance"])
+    return None
 
+# Normalize amount (remove commas, INR, etc.)
+def clean_amount(val):
+    try:
+        val = str(val).replace(',', '').replace('INR', '').replace('₹', '').strip()
+        return float(val) if val else 0.0
+    except:
+        return 0.0
+    
 def clean_ocr_date(date_str):
     date_str = str(date_str).strip()
     date_str = re.sub(r"[Oo]", "0", date_str)
@@ -46,31 +60,38 @@ def clean_ocr_date(date_str):
         with open("outputs/invalid_dates.log", "a") as f:
             f.write(f"Invalid date '{date_str}' in file: {e}\n")
         return "2025-01-01"
-def parse_bank_statement_text(text):
-    """Parse text from TXT/DOC/PDF into a DataFrame."""
-    lines = text.split("\n")
-    data = []
-    for line in lines:
-        if line.strip():
-            parts = re.split(r"\s{2,}|\t", line.strip())
-            if len(parts) >= 4:
-                data.append(parts[:5])
-    columns = ["Date", "Description", "Debit", "Credit", "Balance"]
-    df = pd.DataFrame(data, columns=columns[:len(data[0])])
-    if not df.empty:
-        df["Date"] = df["Date"].apply(clean_ocr_date)
-        df["Debit"] = pd.to_numeric(df["Debit"], errors='coerce').fillna(0.0)
-        df["Credit"] = pd.to_numeric(df["Credit"], errors='coerce').fillna(0.0)
-        df["Balance"] = pd.to_numeric(df["Balance"], errors='coerce').fillna(0.0)
-    return df
+    
+MODE_KEYWORDS = {
+    "NEFT": ["neft", "rtgs"],
+    "IMPS": ["imps"],
+    "UPI": ["upi", "gpay", "googlepay", "phonepe", "paytm"],
+    "CHEQUE": ["cheque", "check", "chq"],
+    "ATM": ["atm", "withdrawal"],
+    "CARD": ["card", "visa", "mastercard", "rupay"],
+    "WALLET": ["wallet", "mobikwik", "paytm wallet"],
+    "TRANSFER": ["transfer", "to account", "from account", "credited from"],
+}
 
-def extract_bank_statement(input_file, output_file, file_type="pdf"):
+def detect_mode_from_description(desc: str):
+    d = desc.lower()
+    for mode, kws in MODE_KEYWORDS.items():
+        if any(kw in d for kw in kws):
+            return mode
+    return ""
+
+def extract_text_from_image(path):
+    img = Image.open(path)
+    return pytesseract.image_to_string(img)
+            
+def extract_transactions(input_file, output_file=None, file_type="pdf"):
     """Extract and clean bank statement data."""
     try:
         if not os.path.exists(input_file):
             raise FileNotFoundError(f"Input file {input_file} not found")
         if os.path.getsize(input_file) == 0:
             raise ValueError(f"Input file {input_file} is empty")
+
+        # Handle file parsing
         if file_type == "pdf":
             with fitz.open(input_file) as doc:
                 text = "\n".join([page.get_text() for page in doc])
@@ -92,80 +113,54 @@ def extract_bank_statement(input_file, output_file, file_type="pdf"):
             df = parse_bank_statement_text(text)
         else:
             raise ValueError("Unsupported file format")
-        
+
+        # Check results
         if df.empty:
             print(f"[WARNING] Empty file after processing: {input_file}")
             with open("outputs/extraction_errors.log", "a") as f:
                 f.write(f"Empty file after processing: {input_file}\n")
-            return
+            return pd.DataFrame()
+
         required_columns = ["Date", "Description", "Debit", "Credit", "Balance"]
         if not all(col in df.columns for col in required_columns):
             print(f"[ERROR] Missing required columns in {input_file}: {df.columns}")
             with open("outputs/extraction_errors.log", "a") as f:
                 f.write(f"Missing columns in {input_file}: {df.columns}\n")
-            return
-        os.makedirs(os.path.dirname(output_file), exist_ok=True)
-        df.to_csv(output_file, index=False)
-        print(f"✅ Extracted and cleaned: {output_file}")
+            return pd.DataFrame()
+
+        # Save only if path is provided
+        if output_file:
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+            df.to_csv(output_file, index=False)
+            print(f"✅ Extracted and cleaned: {output_file}")
+
+        return df
+
     except Exception as e:
         print(f"[ERROR] Failed to process {input_file}: {e}")
         with open("outputs/extraction_errors.log", "a") as f:
             f.write(f"Failed to process {input_file}: {e}\n")
-
-# Normalize amount (remove commas, INR, etc.)
-def clean_amount(val):
-    try:
-        val = str(val).replace(',', '').replace('INR', '').replace('₹', '').strip()
-        return float(val) if val else 0.0
-    except:
-        return 0.0
-
-def extract_text_from_pdf(pdf_path):
-    """Extract text from a text-based PDF using PyMuPDF."""
-    try:
-        with fitz.open(pdf_path) as doc:
-            text = "\n".join([page.get_text() for page in doc])
-        return text
-    except Exception as e:
-        print(f"Error extracting text from PDF: {e}")
-        return ""
+        return pd.DataFrame()
 
 def extract_df_from_scanned_pdf(pdf_data):
-    """Extract data from a scanned PDF using PaddleOCR."""
     try:
-        # Save PDF data to a temporary file
-        temp_pdf = "temp.pdf"
-        with open(temp_pdf, "wb") as f:
-            f.write(pdf_data)
-        
-        # Open PDF and process each page
-        data = []
-        with fitz.open(temp_pdf) as doc:
-            for page in doc:
-                pix = page.get_pixmap(dpi=300)
-                img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-                # Convert PIL Image to OpenCV format for PaddleOCR
-                img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
-                ocr_result = ocr.ocr(img_cv, cls=True)
-                
-                # Extract text from OCR result
-                text_lines = [line[1][0] for line in ocr_result[0] if line[1][0]]
-                page_text = "\n".join(text_lines)
-                df = parse_text_to_transactions(page_text)
-                data.append(df)
-        
-        # Clean up
-        if os.path.exists(temp_pdf):
-            os.remove(temp_pdf)
-        
-        # Combine data from all pages
-        if data:
-            return pd.concat(data, ignore_index=True).dropna(subset=["Date", "Balance"])
-        return pd.DataFrame(columns=["Date", "Description", "Debit", "Credit", "Balance"])
+        import pytesseract
+        from PIL import Image
+        with fitz.open(stream=pdf_data, filetype="pdf") as doc:
+            for page_num in range(doc.page_count):
+                image_list = doc.get_page_images(page_num)
+                if image_list:
+                    xref = image_list[0][0]  # Get first image reference
+                    base_image = doc.extract_image(xref)
+                    image = Image.open(io.BytesIO(base_image["image"]))
+                    text = pytesseract.image_to_string(image)
+                    if text.strip():
+                        return parse_bank_statement_text(text)
+            return pd.DataFrame(columns=["Date", "Description", "Debit", "Credit"])
     except Exception as e:
-        print(f"Error in OCR extraction: {e}")
-        return pd.DataFrame(columns=["Date", "Description", "Debit", "Credit", "Balance"])
-
+        print(f"OCR Error: {e}")
+        return pd.DataFrame(columns=["Date", "Description", "Debit", "Credit"])
+    
 def parse_text_to_transactions(text: str) -> pd.DataFrame:
     """Parse OCR text into a structured DataFrame."""
     lines = text.strip().split("\n")

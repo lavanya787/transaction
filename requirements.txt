@@ -6,12 +6,13 @@ scikit-learn
 python-dateutil
 xgboost
 spacy
+scipy
 fuzzywuzzy
 pytesseract
 pdf2image
 pillow
 chardet
-pymupdf
+PyMuPDF
 python-docx
 docx2txt
 streamlit
@@ -34,3 +35,9 @@ cryptography
 
 # paddlepaddle special install command (run separately):
 # pip install paddlepaddle -i https://mirror.baidu.com/pypi/simple
+
+transformers
+torch
+seaborn
+weasyprint
+kaleido

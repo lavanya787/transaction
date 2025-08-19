@@ -1,0 +1,260 @@
+{
+    "Income": [
+        "salary",
+        "neft-?cr|neft-in|neft.*credit",
+        "imps-?cr|imps.*credit",
+        "payroll",
+        "deposit.*salary",
+        "income",
+        "credited",
+        "inward remittance",
+        "rtgs-?cr|rtgs.*credit",
+        "ecs.*cr",
+        "upi.*cr|upi.*credit",
+        "freelance",
+        "bonus",
+        "consulting",
+        "dividend",
+        "refund",
+        "cashback",
+        "\\[Salary\\]",
+        "\\[Bonus\\]",
+        "\\[Refund\\]"
+    ],
+    "Fixed_Expenses": [
+        "rent|rental|house rent|lease",
+        "emi|loan repayment|installment",
+        "lic|insurance|premium",
+        "subscription|netflix|spotify|prime",
+        "maintenance|apartment fee",
+        "postpaid|mobile bill",
+        "electricity|power bill",
+        "water bill",
+        "broadband|internet",
+        "gas|cylinder",
+        "ecs.*dr",
+        "auto.*debit",
+        "mortgage",
+        "school fee|tuition",
+        "property tax",
+        "\\[Rent\\]",
+        "\\[Electricity\\]",
+        "\\[Insurance\\]"
+    ],
+    "Discretionary_Expenses": [
+        "shopping",
+        "zomato|swiggy|foodpanda|uber eats",
+        "bookmyshow|ticket",
+        "travel|airlines|hotel|makemytrip|yatra",
+        "pizza|restaurant|food|cafe",
+        "amazon|flipkart|myntra",
+        "uber|ola|rapido",
+        "paytm.*dr",
+        "phonepe.*dr",
+        "bigbasket|grofers",
+        "cinema|movie",
+        "gym|fitness",
+        "apparel|clothing",
+        "electronics",
+        "\\[Shopping\\]",
+        "\\[Dining\\]",
+        "\\[Travel\\]"
+    ],
+    "Savings": [
+        "fd|fixed deposit",
+        "rd|recurring deposit",
+        "sip|systematic investment",
+        "investment",
+        "nps|national pension",
+        "mutual fund",
+        "deposit to savings",
+        "transfer to savings",
+        "ppf|public provident",
+        "epf|employee provident",
+        "gold bond",
+        "sukanya samriddhi",
+        "\\[FD\\]",
+        "\\[RD\\]",
+        "\\[SIP\\]"
+    ],
+    "Red_Flags": [
+        "penalty",
+        "bounced|cheque bounce",
+        "overdraft",
+        "atm fail|atm decline",
+        "chargeback",
+        "reversal",
+        "negative balance",
+        "late fee|late payment",
+        "high cash withdrawal|cash.*\\d{5,}",
+        "upi.*\\d{5,}.*cash",
+        "declined|rejected",
+        "suspicious",
+        "fraud",
+        "international.*\\d{5,}",
+        "atm.*\\d{5,}"
+    ],
+    "Transfer": [
+    "Digital Payments",
+    "Bank Transfer",
+    "ATM Withdrawal",
+    "Cash Withdrawal",
+    "Cash Deposit"
+  ],
+    "Food & Dining": [
+        "zomato|swiggy|foodpanda|uber eats",
+        "bookmyshow|ticket",
+        "travel|airlines|hotel|makemytrip|yatra",
+        "pizza|restaurant|food|cafe",
+        "amazon|flipkart|myntra",
+        "uber|ola|rapido",
+        "paytm.*dr",
+        "phonepe.*dr",
+        "bigbasket|grofers",
+        "cinema|movie",
+        "gym|fitness",
+        "apparel|clothing",
+        "electronics",
+        "\\[Shopping\\]",
+        "\\[Dining\\]",
+        "\\[Travel\\]"
+    ],
+
+    "Healthcare": [
+        "pharmacy",
+        "apollo",
+        "medplus",
+        "netmeds",
+        "medlife",
+        "doctor|consultation|checkup",
+        "hospital|clinic|healthcare",
+        "health insurance",
+        "medical expenses",
+        "\\[Healthcare\\]"
+    ],
+    "Charity": [
+        "donation",
+        "ngo|non-governmental organization",
+        "temple|church|mosque|religious donation",
+        "charity",
+        "fundraiser",
+        "\\[Charity\\]"
+    ],
+    "Entertainment": [
+        "cinema|movie",
+        "bookmyshow|ticket",
+        "netflix|spotify|prime",
+        "gaming|games",
+        "concert|event",
+        "theater|play",
+        "\\[Entertainment\\]"
+    ],
+    "Education": [
+        "school fees|tuition",
+        "college fees|university fees",
+        "udemy|coursera|online courses",
+        "byjus|whitehat jr|edtech",
+        "books|stationery",
+        "education loan",
+        "\\[Education\\]"
+    ],
+    "Utilities": [
+        "electricity|power bill",
+        "water bill",
+        "gas|cylinder",
+        "broadband|internet",
+        "mobile recharge|postpaid",
+        "dth|cable",
+        "\\[Utilities\\]"
+    ],
+    "Provident Fund": [
+        "pf|provident fund",
+        "epf|employee provident",
+        "ppf|public provident",
+        "nps|national pension",
+        "\\[Provident Fund\\]"
+    ],
+    "Pension": [
+        "pension|retirement fund",
+        "nps|national pension",
+        "epf|employee provident",
+        "\\[Pension\\]"
+    ],
+    "ATM Withdrawal": [
+        "atm|atm withdrawal|cash withdrawal",
+        "withdrawal.*\\d{5,}",
+        "cash.*\\d{5,}.*withdrawal",
+        "\\[ATM Withdrawal\\]"
+    ],
+    "Cash Withdrawal": [
+        "cash withdrawal|withdrawal.*\\d{5,}",
+        "atm|atm withdrawal",
+        "withdrawal.*\\d{5,}",
+        "\\[Cash Withdrawal\\]"
+    ],
+    "Cash Deposit": [
+        "cash deposit|deposit.*\\d{5,}",
+        "atm|atm deposit",
+        "deposit.*\\d{5,}",
+        "\\[Cash Deposit\\]"
+    ],
+    "Recharge & Bills": [
+        "mobile recharge|postpaid",
+        "dth|cable",
+        "broadband|internet",
+        "electricity|power bill",
+        "water bill",
+        "gas|cylinder",
+        "\\[Recharge & Bills\\]"
+    ],
+    "Digital Payments": [
+        "upi|phonepe|google pay|paytm",
+        "neft|imps|rtgs",
+        "bank transfer|transfer to",
+        "digital wallet",
+        "\\[Digital Payments\\]"
+    ],
+    "Bank Transfer": [
+        "neft|imps|rtgs",
+        "bank transfer|transfer to",
+        "digital wallet",
+        "\\[Bank Transfer\\]"
+    ],
+    "Insurance": [
+        "lic|insurance|premium",
+        "hdfc life|sbi life|icici prudential|tata aig",
+        "health insurance",
+        "life insurance",
+        "\\[Insurance\\]"
+    ],
+    "Investment": [
+        "mutual fund|mf",
+        "stock|equity|shares",
+        "nps|national pension",
+        "sip|systematic investment",
+        "investment account",
+        "\\[Investment\\]"
+    ],
+    "Interest Income": [
+        "credit interest|interest earned",
+        "fd interest|fixed deposit interest",
+        "rd interest|recurring deposit interest",
+        "\\[Interest Income\\]"
+    ],
+    "FD Interest": [
+        "fd interest|fixed deposit interest",
+        "interest earned|credit interest",
+        "\\[FD Interest\\]"
+    ],
+    "RD Interest": [
+        "rd interest|recurring deposit interest",
+        "interest earned|credit interest",
+        "\\[RD Interest\\]"
+    ],
+    "Salary": [
+        "salary|payroll|income",
+        "credited|inward remittance",
+        "bonus|consulting|freelance",
+        "\\[Salary\\]"
+    ]
+}
